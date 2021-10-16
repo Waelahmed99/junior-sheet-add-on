@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <base target="_top">
+  <script>
+    function onSuccess(url) {
+      var a = document.createElement("a"); 
+      a.href = url;
+      a.target = "_blank";
+      window.close = function () {
+        window.setTimeout(function() {
+          google.script.host.close();
+        }, 9);
+      };
+      if (document.createEvent) {
+        var event = document.createEvent("MouseEvents");
+        if (navigator.userAgent.toLowerCase().indexOf("firefox") > -1) {
+          window.document.body.append(a);
+        }                        
+        event.initEvent("click", true, true); 
+        a.dispatchEvent(event);
+      } else {
+        a.click();
+      }
+      close();
+    }
+
+    function onFailure(url) {
+      var div = document.getElementById('failureContent');
+      var link = '<a href="' + url + '" target="_blank">Process</a>';
+      div.innerHtml = "Failure to open automatically: " + link;
+    }
+
+    google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onFailure).getUrl();
+  </script>
+  <body>
+    <div id="failureContent"></div>
+  </body>
+  <script>
+    google.script.host.setHeight(40);
+    google.script.host.setWidth(410);
+  </script>
+</html>
