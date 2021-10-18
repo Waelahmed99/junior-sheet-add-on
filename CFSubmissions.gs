@@ -1,21 +1,20 @@
 function fetchCFSubmissions(handle) {
+  if (handle == "") return new Map([['error', 'no handle']])
   var responseData
   try {
     const response = UrlFetchApp.fetch(`https://codeforces.com/api/user.status?handle=${handle}`)
     responseData = JSON.parse(response.getContentText())
   } catch {
-    handleError()
-    return
+    handleError(handle, 'CF')
+    return new Map([['error', 'bad request']])
   }
   
   if (responseData.status != 'OK') {
-    handleError()
-    return
+    handleError(handle, 'CF')
+    return new Map([['error', 'wrong handle']])
   }
   
-  var submissions = extractCF(responseData.result)
-
-  setCFColumn(submissions)  
+  return extractCF(responseData.result)
 }
 
 function extractCF(result) {
@@ -31,30 +30,6 @@ function extractCF(result) {
       submissions.set(problemId, verdict)
   }
   return submissions
-}
-
-function setCFColumn(submissions) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
-  var sourceRange = sheet.getRange(1, 2, sheet.getLastRow());
-
-  var sourceData = sourceRange.getFormulas();
-  for (row in sourceData) {
-    var data = sourceData[row][0].toString()
-
-    const matcher = data.match(/"[^,]+"/g)
-    if (matcher == null) continue
-
-    const url = matcher[0]
-    if (url.includes("codeforces")) {
-      const splitter = url.split('/')
-      const contestId = splitter[splitter.length - 3]
-      const problemIndex = splitter[splitter.length - 1].slice(0, -1)
-      
-      const problemId = contestId + problemIndex
-      const verdict = submissions.get(problemId) ? submissions.get(problemId) : ''
-      sheet.getRange(parseInt(row) + 1, 3).setValue(verdict)
-    }
-  }
 }
 
 function getProblemVerdict(verdict) {
