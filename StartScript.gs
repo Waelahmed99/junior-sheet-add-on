@@ -37,7 +37,7 @@ function setStatusColumn(cfSubmissions, uvaSubmissions, sheetName) {
 
 function getCFVerdict(url, submissions) {
   const splitter = url.split('/')
-  const contestId = splitter[splitter.length - 3]
+  const contestId = url.match(/(\d+)/g)
   const problemIndex = splitter[splitter.length - 1].slice(0, -1)
 
   const problemId = contestId + problemIndex
