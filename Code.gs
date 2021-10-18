@@ -1,47 +1,53 @@
-function onInstall(e) {
-  onOpen(e)
+const sheets = ['A','B','C1','C2','D1','D2','D3']
+
+const onInstall = (e) => onOpen(e)
+
+const onOpen = (e) => createMenu()
+
+function createMenu() {
+  const ui = SpreadsheetApp.getUi()
+  
+  const submenu = ui.createMenu('Specific sheet')
+
+  for (var sheet in sheets) {
+    const name = sheets[sheet]
+    submenu.addItem(name, name)
+  }
+
+  ui.createMenu('Sheet Automation')
+    .addItem('Start script', 'startScript')
+    .addSubMenu(submenu)
+    .addSeparator()
+    .addItem('First time?', 'guide')
+    .addToUi();
 }
 
-function onOpen(e) {
-    const ui = SpreadsheetApp.getUi();
-    ui.createMenu('Sheet automation')
-      .addItem('Fetch Codeforces', 'fetchCodeforces')
-      .addItem('Fetch UVA', 'fetchUVA')
-      .addItem('About', 'about')
-      .addToUi();
+function guide() {
+  const cfHandle = promptForHandle('Codeforces', 'CF')
+  const uvaHandle = promptForHandle('UVA', 'UVA')
+
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Info')
+  const lastRow = sheet.getLastRow()
+  sheet.insertRowAfter(lastRow)
+
+  sheet.getRange(lastRow + 1, 1, 1, 2).setValues([[cfHandle, uvaHandle]])
 }
 
-function fetchCodeforces() {
-  var ui = SpreadsheetApp.getUi();
-  var handle = ui.prompt("Please enter your handle");
-  fetchCFSubmissions(handle.getResponseText())
+function promptForHandle(name, abbr) {
+  const ui = SpreadsheetApp.getUi()
+  const result = ui.prompt(
+      `Enter your ${name} handle!`,
+      `Click Cancel if you don't want ${abbr} submissions`,
+      ui.ButtonSet.OK_CANCEL);
+
+  const button = result.getSelectedButton()
+  if (button != ui.Button.OK) { // User clicked "OK"
+    return ''
+  }
+
+  return result.getResponseText()
 }
 
-function fetchUVA() {
-  var ui = SpreadsheetApp.getUi();
-  var handle = ui.prompt("Please enter your handle");
-  fetchUVASubmissions(handle.getResponseText())
-}
-
-function about() {
-    const ui = SpreadsheetApp.getUi();
-
-    var result = ui.alert(
-     'Follow me on GitHub?',
-     'This add-on is developed by Wael Ahmed',
-      ui.ButtonSet.YES_NO)
-    
-    if (result == ui.Button.YES) {
-      var html = HtmlService.createHtmlOutputFromFile("index");
-      html.setWidth(90).setHeight(1);
-      ui.showModalDialog(html, "Opening ..." );
-    }
-}
-
-function getUrl() {
-  return 'https://github.com/Waelahmed99/'
-}
-
-function handleError() {
-  Browser.msgBox("Oops, you have just entered wrong handle!")
+function handleError(handle, which) {
+  Browser.msgBox(`Oops, you have just entered wrong handle! \\n${which}:${handle}`)
 }
