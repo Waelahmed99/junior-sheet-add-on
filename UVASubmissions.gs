@@ -1,19 +1,20 @@
 function fetchUVASubmissions(handle) {
+  if (handle == "") return new Map([['error', 'no handle']])
   var userID
   try {
     const response = UrlFetchApp.fetch(`https://uhunt.onlinejudge.org/api/uname2uid/${handle}`)
     userID = JSON.parse(response.getContentText())
   } catch {
-    handleError()
-    return
+    handleError(handle, 'UVA')
+    return new Map([['error', 'bad request']])
   }
 
   if (userID == 0) {
-    handleError()
-    return
+    handleError(handle, 'UVA')
+    return new Map([['error', 'wrong handle']])
   }
   
-  extractUVA(userID)
+  return extractUVA(userID)
 }
 
 function extractUVA(userID) {
@@ -22,32 +23,13 @@ function extractUVA(userID) {
     const response = UrlFetchApp.fetch(`https://uhunt.onlinejudge.org/api/subs-user/${userID}`)
     responseData = JSON.parse(response.getContentText()).subs
   } catch {
-    handleError()
-    returnextractCF
+    handleError(userID, 'UVA')
+    return new Map([['error', 'bad request']])
   } 
   // index 1: ProblemID, index 2: verdict
   const submissions = getSubmissions(responseData)
 
-  setUVAColumn(submissions)
-}
-
-function setUVAColumn(submissions) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
-  var sourceRange = sheet.getRange(1, 2, sheet.getLastRow());
-
-  var sourceData = sourceRange.getFormulas();
-  for (row in sourceData) {
-    var data = sourceData[row][0].toString()
-    const matcher = data.match(/"[^,]+"/g)
-    if (matcher == null) continue
-
-    const url = matcher[0]
-    if (url.includes("uva")) {
-      const problemID = parseInt(url.substr(parseInt(url.search('problem=')) + 8).slice(0, -1));
-      const verdict = submissions.get(problemID) ? submissions.get(problemID) : ''
-      sheet.getRange(parseInt(row) + 1, 3).setValue(verdict)
-    }
-  }
+  return submissions
 }
 
 function getSubmissions(result) {
