@@ -11,7 +11,7 @@ Currently, you can install this add-on as a library (You have to write one or tw
 - Remove everything on Code.gs
 - Add the following line of code, then run the code (onOpen function)
   ```
-      const onOpen = (e) => createMenu('SheetAutomation')
+      const onOpen = (e) => SheetAutomation.createMenu('SheetAutomation')
   ```
 > If you changed the name while adding the library, make sure to pass the correct name as a parameter.
 
