@@ -1,38 +1,72 @@
-const sheets = ['A','B','C1','C2','D1','D2','D3']
+/*
+  Create `Sheet Automation` menu 
+     After opening the sheet.
+*/
+const onOpen = (e) => createMenu('')
 
-const onInstall = (e) => onOpen(e)
+/*
+  if used as an external library, [libName] is required. 
+  @param libName: The name of library in your code to fire function on menu items.
 
-const onOpen = (e) => createMenu()
-
-function createMenu() {
+  Creates a menu in the SpreadSheet UI to perform script functionalities.
+*/
+function createMenu(libName) {
   const ui = SpreadsheetApp.getUi()
-  
-  const submenu = ui.createMenu('Specific sheet')
-
-  for (var sheet in sheets) {
-    const name = sheets[sheet]
-    submenu.addItem(name, name)
-  }
+  if (libName.length != 0) libName = libName + '.'
 
   ui.createMenu('Sheet Automation')
-    .addItem('Start script', 'startScript')
-    .addSubMenu(submenu)
+    .addItem('Automate current sheet', `${libName}startScript`)
     .addSeparator()
-    .addItem('First time?', 'guide')
+    .addItem('Set Handles', `${libName}setHandles`)
     .addToUi();
 }
 
-function guide() {
+/*
+  Prompts input fields for `Codeforces` and `UVA` handles.
+  If user entered none, nothing will be generated.
+  User can pass only one handle or both.
+
+  After getting input, a new sheet is inserted `Script:MetaData`
+  with user input and some decoration.
+*/
+function setHandles() {
   const cfHandle = promptForHandle('Codeforces', 'CF')
   const uvaHandle = promptForHandle('UVA', 'UVA')
 
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Info')
-  const lastRow = sheet.getLastRow()
-  sheet.insertRowAfter(lastRow)
+  if (cfHandle == "" && uvaHandle == "") {
+    Browser.msgBox("You have NOT entered any handle\\nNo metadata will be generated!")
+    return;
+  }
 
-  sheet.getRange(lastRow + 1, 1, 1, 2).setValues([[cfHandle, uvaHandle]])
+  var metaDataSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Script:MetaData");
+
+  if (metaDataSheet == null) 
+      metaDataSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet();
+
+  metaDataSheet.setName("Script:MetaData");
+
+  metaDataSheet.getRange(1, 1, 1, 2).setValues([["Don't change/delete this metadata", '']]).setHorizontalAlignment("center").merge().setBackgroundRGB(255,0,0)
+  metaDataSheet.getRange(2, 1, 1, 2).setValues([['CF Handle', 'UVA Handle']]).setHorizontalAlignment("center").setBackgroundRGB(255,255,0)
+  metaDataSheet.getRange(3, 1, 1, 2).setValues([[cfHandle, uvaHandle]]).setHorizontalAlignment("center")
+
+  const maxRows = metaDataSheet.getMaxRows();
+  const lastRow = metaDataSheet.getLastRow();
+  if (maxRows != lastRow)
+    metaDataSheet.deleteRows(lastRow + 1, maxRows - lastRow);
+
+  const maxColumns = metaDataSheet.getMaxColumns();
+  const lastColumn = metaDataSheet.getLastColumn();
+  if (maxColumns != lastColumn)
+    metaDataSheet.deleteColumns(lastColumn + 1, maxColumns - lastColumn);
 }
 
+/*
+  Asks user for given handle
+  returns the response. 
+
+  @params name: The name of the required handle
+  @params abbr: The abbreviation of the website.
+*/
 function promptForHandle(name, abbr) {
   const ui = SpreadsheetApp.getUi()
   const result = ui.prompt(
@@ -48,6 +82,12 @@ function promptForHandle(name, abbr) {
   return result.getResponseText()
 }
 
+/*
+  Prompts an error when wrong handle is passed.
+
+  @params handle: The wrong handle
+  @params which: Website abbreviation
+*/
 function handleError(handle, which) {
   Browser.msgBox(`Oops, you have just entered wrong handle! \\n${which}:${handle}`)
 }
