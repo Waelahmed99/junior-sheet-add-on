@@ -6,7 +6,7 @@ Currently, you can install this add-on as a library (You have to write one or tw
 - Open your Junior training sheet 
 - Head to Tools -> Script editor
 - Add a library through the '+' button on the left
-- Enter the Script ID: 1W2XNXACyH9q8BTv82MnKxoahZF2IjUEz1PUYkr2pJXb3OSloNNgIuBnb
+- Enter the Script ID: `1W2XNXACyH9q8BTv82MnKxoahZF2IjUEz1PUYkr2pJXb3OSloNNgIuBnb`
 - Click Add
 - Remove everything on Code.gs
 - Add the following line of code, then run the code (onOpen function)
