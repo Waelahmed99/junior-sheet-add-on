@@ -12,7 +12,7 @@ function startScript() {
 
   if (sheet == null) {
     guide()
-    sheet = SpsetHandlesheetApp.getActiveSpreadsheet().getSheetByName('Script:MetaData')
+        sheet = SpsetHandlesheetApp.getActiveSpreadsheet().getSheetByName('Script:MetaData')
     if (sheet == null) return;
   }
 
@@ -20,7 +20,7 @@ function startScript() {
 
   const cfHandle = sheet.getRange(lastRow, 1).getValue()
   const uvaHandle = sheet.getRange(lastRow, 2).getValue()
-  
+
   const cfSubmissions = fetchCFSubmissions(cfHandle)
   const uvaSubmissions = fetchUVASubmissions(uvaHandle)
 
@@ -51,6 +51,8 @@ function setStatusColumn(cfSubmissions, uvaSubmissions) {
     const problemId = getProblemIdFromUrl(url)
     const result = getResultFromProblemId(problemId, cfSubmissions, uvaSubmissions)
     sheet.getRange(parseInt(row) + 1, 3, 1, 2).setValues([result]).setHorizontalAlignment("center")
+    //sheet.getRange(parseInt(row) + 1, 3).setRichTextValue(result[0]).setHorizontalAlignment("center")
+    //sheet.getRange(parseInt(row) + 1, 4).setValue(result[1]).setHorizontalAlignment("center")
   }
   sheet.getRange(2, 1).setValue(`Solved today: ${solvedToday}`)
 }
@@ -81,12 +83,15 @@ function getResultFromProblemId(problemId, cfSubmissions, uvaSubmissions) {
   let verdict = '', count = '', timestamp
   if (cfSubmissions.has(problemId)) {
     count = cfSubmissions.get(problemId).count
-    verdict = cfSubmissions.get(problemId).verdict 
+    verdict = cfSubmissions.get(problemId).verdict
     timestamp = cfSubmissions.get(problemId).timestamp
+    submissionsLink = cfSubmissions.get(problemId).link
+    verdict = `=HYPERLINK("${submissionsLink}","${verdict}")`;
+    //verdictWithLink = SpreadsheetApp.newRichTextValue().setText(verdict).setLinkUrl(submissionsLink).build();
   } else if (uvaSubmissions.has(problemId)) {
     count = uvaSubmissions.get(problemId).count
-    verdict = uvaSubmissions.get(problemId).verdict 
-    timestamp = uvaSubmissions.get(problemId).timestamp 
+    verdict = uvaSubmissions.get(problemId).verdict
+    timestamp = uvaSubmissions.get(problemId).timestamp
   }
 
   if (verdict == 'AC' && isSolvedToday(timestamp)) solvedToday++
