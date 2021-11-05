@@ -15,12 +15,12 @@ function fetchCFSubmissions(handle) {
     handleError(handle, 'CF')
     return new Map([['error', 'bad request']])
   }
-  
+
   if (responseData.status != 'OK') {
     handleError(handle, 'CF')
     return new Map([['error', 'wrong handle']])
   }
-  
+
   return extractCF(responseData.result)
 }
 
@@ -38,17 +38,29 @@ function extractCF(result) {
     var data = result[problem]
     var problemId = data.problem.contestId + data.problem.index
     var verdict = getProblemVerdict(data.verdict)
+    var submissionLink = getSubmissionsLink(data.problem.contestId, data.id.toString());
     if (submissions.has(problemId)) {
       const count = parseInt(submissions.get(problemId).count) + 1
-      if (submissions.get(problemId).verdict != 'AC')
-        submissions.set(problemId, {verdict: verdict, timestamp: data.creationTimeSeconds.toString(), count: count})
-    } else 
-      submissions.set(problemId, {verdict: verdict, timestamp: data.creationTimeSeconds.toString(), count: 1})
+      if (submissions.get(problemId).verdict != 'AC') {
+        submissions.set(problemId, { verdict: verdict, timestamp: data.creationTimeSeconds.toString(), count: count, link: submissionLink })
+      }
+    } else
+      submissions.set(problemId, { verdict: verdict, timestamp: data.creationTimeSeconds.toString(), count: 1, link: submissionLink })
   }
-  
+
   return submissions
 }
+/*
+  Returns the submission link of the problem
 
+  @params problemId: The id for the the contest and the cuurent submissions from codeforces response
+
+  returns whole submissions link. 
+*/
+
+function getSubmissionsLink(contestId, submissionsId) {
+  return "https://codeforces.com/contest/" + contestId + "/submission/" + Number(submissionsId.toString()).toFixed(0).toString();
+}
 /*
   Returns the verdict text of the problem
 
