@@ -32,6 +32,7 @@ function fetchCFSubmissions(handle) {
   returns map of submissions.
 */
 function extractCF(result) {
+  result.reverse();
   //creationTimeSeconds
   var submissions = new Map()
   for (problem in result) {
