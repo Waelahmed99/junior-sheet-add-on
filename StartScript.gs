@@ -85,6 +85,8 @@ function getResultFromProblemId(problemId, cfSubmissions, uvaSubmissions) {
     count = cfSubmissions.get(problemId).count
     verdict = cfSubmissions.get(problemId).verdict
     timestamp = cfSubmissions.get(problemId).timestamp
+    
+    // Contribution by MahmoudHamdy00 (GitHub)
     submissionsLink = cfSubmissions.get(problemId).link
     verdict = `=HYPERLINK("${submissionsLink}","${verdict}")`;
     //verdictWithLink = SpreadsheetApp.newRichTextValue().setText(verdict).setLinkUrl(submissionsLink).build();
