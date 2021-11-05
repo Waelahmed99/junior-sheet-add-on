@@ -27,7 +27,7 @@ function startScript() {
 
   setStatusColumn(cfSubmissions, uvaSubmissions, sheetNames)
 
-  //createAnalysis();
+  createAnalysis();
 }
 
 /*
@@ -95,12 +95,12 @@ function getResultFromProblemId(problemId, cfSubmissions, uvaSubmissions) {
     submissionsLink = cfSubmissions.get(problemId).link
     verdict = `=HYPERLINK("${submissionsLink}","${verdict}")`;
     //verdictWithLink = SpreadsheetApp.newRichTextValue().setText(verdict).setLinkUrl(submissionsLink).build();
-    //analysisTimestamps.push(timestamp);
+    analysisTimestamps.push(timestamp);
   } else if (uvaSubmissions.has(problemId)) {
     count = uvaSubmissions.get(problemId).count
     verdict = uvaSubmissions.get(problemId).verdict
     timestamp = uvaSubmissions.get(problemId).timestamp
-   //analysisTimestamps.push(timestamp);
+   analysisTimestamps.push(timestamp);
   }
 
   if (verdict == 'AC' && isSolvedToday(timestamp)) solvedToday++
