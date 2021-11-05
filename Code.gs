@@ -45,8 +45,8 @@ function setHandles() {
 
   metaDataSheet.setName("Script:MetaData");
 
-  metaDataSheet.getRange(1, 1, 1, 3).setValues([["Don't change/delete this metadata", '']]).setHorizontalAlignment("center").merge().setBackgroundRGB(255,0,0)
-  metaDataSheet.getRange(2, 1, 1, 3).setValues([['CF Handle', 'UVA Handle','Problems Sheet Name (Seperated by ',')']]).setHorizontalAlignment("center").setBackgroundRGB(255,255,0)
+  metaDataSheet.getRange(1, 1, 1, 3).setValues([["Don't change/delete this metadata", '','']]).setHorizontalAlignment("center").merge().setBackgroundRGB(255,0,0)
+  metaDataSheet.getRange(2, 1, 1, 3).setValues([['CF Handle', 'UVA Handle','Problems Sheet Name (Seperated by \',\')']]).setHorizontalAlignment("center").setBackgroundRGB(255,255,0)
   metaDataSheet.getRange(3, 1, 1, 3).setValues([[cfHandle, uvaHandle,'A,B,C1,C2,D1,D2,D3']]).setHorizontalAlignment("center")
 
   const maxRows = metaDataSheet.getMaxRows();
