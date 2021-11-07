@@ -2,7 +2,7 @@
 Sheet Automation is an add-on that automates setting the verdict of problems in [Mostafa Saad's junior sheet](https://docs.google.com/spreadsheets/d/1iJZWP2nS_OB3kCTjq8L6TrJJ4o-5lhxDOyTaocSYc-k/).
 
 ## Use as a library
-Currently, you can install this add-on as a library (You have to write one or two lines of codes).
+Currently, you can install this add-on as a library (You have to write one or two lines of code).
 - Open your Junior training sheet 
 - Head to Tools -> Script editor
 - Add a library through the '+' button on the left
