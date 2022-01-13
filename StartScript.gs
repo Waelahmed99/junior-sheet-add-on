@@ -12,9 +12,10 @@ function startScript() {
 
   if (sheet == null) {
     guide()
-        sheet = SpsetHandlesheetApp.getActiveSpreadsheet().getSheetByName('Script:MetaData')
+    sheet = SpsetHandlesheetApp.getActiveSpreadsheet().getSheetByName('Script:MetaData')
     if (sheet == null) return;
   }
+  var sheetNames = sheet.getRange(3, 3).getValue().toString().split(',');
 
   const lastRow = sheet.getLastRow()
 
@@ -24,7 +25,9 @@ function startScript() {
   const cfSubmissions = fetchCFSubmissions(cfHandle)
   const uvaSubmissions = fetchUVASubmissions(uvaHandle)
 
-  setStatusColumn(cfSubmissions, uvaSubmissions)
+  setStatusColumn(cfSubmissions, uvaSubmissions, sheetNames)
+
+  //createAnalysis();
 }
 
 /*
@@ -33,28 +36,30 @@ function startScript() {
   @params cfSubmissions: Map of user's Codeforces submissions
   @params uvaSubmissions: Map of user's UVA submissions
 */
-function setStatusColumn(cfSubmissions, uvaSubmissions) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet()
-  var sourceRange = sheet.getRange(1, 2, sheet.getLastRow());
+function setStatusColumn(cfSubmissions, uvaSubmissions, sheetNames) {
+  for (var i = 0; i < sheetNames.length; ++i) {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetNames[i])
+    var sourceRange = sheet.getRange(1, 2, sheet.getLastRow());
 
-  solvedToday = 0
-  var sourceData = sourceRange.getFormulas();
-  for (row in sourceData) {
-    var data = sourceData[row][0].toString()
+ solvedToday = 0
+    var sourceData = sourceRange.getFormulas();
+    for (row in sourceData) {
+      var data = sourceData[row][0].toString()
 
-    const matcher = data.match(/"[^,]+"/g)
-    if (matcher == null) continue
+      const matcher = data.match(/"[^,]+"/g)
+      if (matcher == null) continue
 
-    const url = matcher[0]
-    if (!url.includes("codeforces") && !url.includes("uva")) continue
+      const url = matcher[0]
+      if (!url.includes("codeforces") && !url.includes("uva")) continue
 
-    const problemId = getProblemIdFromUrl(url)
-    const result = getResultFromProblemId(problemId, cfSubmissions, uvaSubmissions)
-    sheet.getRange(parseInt(row) + 1, 3, 1, 2).setValues([result]).setHorizontalAlignment("center")
-    //sheet.getRange(parseInt(row) + 1, 3).setRichTextValue(result[0]).setHorizontalAlignment("center")
-    //sheet.getRange(parseInt(row) + 1, 4).setValue(result[1]).setHorizontalAlignment("center")
+      const problemId = getProblemIdFromUrl(url)
+      const result = getResultFromProblemId(problemId, cfSubmissions, uvaSubmissions)
+      sheet.getRange(parseInt(row) + 1, 3, 1, 2).setValues([result]).setHorizontalAlignment("center")
+      //sheet.getRange(parseInt(row) + 1, 3).setRichTextValue(result[0]).setHorizontalAlignment("center")
+      //sheet.getRange(parseInt(row) + 1, 4).setValue(result[1]).setHorizontalAlignment("center")
+    }
+    sheet.getRange(2, 1).setValue(`Solved today: ${solvedToday}`)
   }
-  sheet.getRange(2, 1).setValue(`Solved today: ${solvedToday}`)
 }
 
 /*
@@ -91,11 +96,13 @@ function getResultFromProblemId(problemId, cfSubmissions, uvaSubmissions) {
     if (verdict == 'AC') isAccepted = true
     verdict = `=HYPERLINK("${submissionsLink}","${verdict}")`;
     //verdictWithLink = SpreadsheetApp.newRichTextValue().setText(verdict).setLinkUrl(submissionsLink).build();
+    //analysisTimestamps.push(timestamp);
   } else if (uvaSubmissions.has(problemId)) {
     count = uvaSubmissions.get(problemId).count
     verdict = uvaSubmissions.get(problemId).verdict
     if (verdict == 'AC') isAccepted = true
     timestamp = uvaSubmissions.get(problemId).timestamp
+   //analysisTimestamps.push(timestamp);
   }
 
   if (isAccepted && isSolvedToday(timestamp)) solvedToday++
