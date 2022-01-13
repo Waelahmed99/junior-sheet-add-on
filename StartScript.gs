@@ -85,7 +85,7 @@ function getProblemIdFromUrl(url) {
   returns [verdict] and [count] of the given problem 
 */
 function getResultFromProblemId(problemId, cfSubmissions, uvaSubmissions) {
-  let verdict = '', count = '', timestamp
+  let verdict = '', count = '', timestamp, isAccepted = false
   if (cfSubmissions.has(problemId)) {
     count = cfSubmissions.get(problemId).count
     verdict = cfSubmissions.get(problemId).verdict
@@ -93,17 +93,19 @@ function getResultFromProblemId(problemId, cfSubmissions, uvaSubmissions) {
     
     // Contribution by MahmoudHamdy00 (GitHub)
     submissionsLink = cfSubmissions.get(problemId).link
+    if (verdict == 'AC') isAccepted = true
     verdict = `=HYPERLINK("${submissionsLink}","${verdict}")`;
     //verdictWithLink = SpreadsheetApp.newRichTextValue().setText(verdict).setLinkUrl(submissionsLink).build();
     //analysisTimestamps.push(timestamp);
   } else if (uvaSubmissions.has(problemId)) {
     count = uvaSubmissions.get(problemId).count
     verdict = uvaSubmissions.get(problemId).verdict
+    if (verdict == 'AC') isAccepted = true
     timestamp = uvaSubmissions.get(problemId).timestamp
    //analysisTimestamps.push(timestamp);
   }
 
-  if (verdict == 'AC' && isSolvedToday(timestamp)) solvedToday++
+  if (isAccepted && isSolvedToday(timestamp)) solvedToday++
 
   return [verdict, count]
 }

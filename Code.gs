@@ -58,6 +58,8 @@ function setHandles() {
   const lastColumn = metaDataSheet.getLastColumn();
   if (maxColumns != lastColumn)
     metaDataSheet.deleteColumns(lastColumn + 1, maxColumns - lastColumn);
+  
+  Browser.msgBox("Great! Now you can use the add-on by clicking 'Automate current sheet'")
 }
 
 /*
