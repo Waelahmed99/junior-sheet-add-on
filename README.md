@@ -4,7 +4,7 @@ Sheet Automation is an add-on that automates setting the verdict of problems in 
 ## Use as a library
 Currently, you can install this add-on as a library (You have to write one or two lines of code).
 - Open your Junior training sheet 
-- Head to Tools -> Script editor
+- Extension tab -> Apps Scripts
 - Add a library through the '+' button on the left
 - Enter the Script ID: `1W2XNXACyH9q8BTv82MnKxoahZF2IjUEz1PUYkr2pJXb3OSloNNgIuBnb`
 - Click Add
